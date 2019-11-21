@@ -6,6 +6,9 @@
     "request": "latest",
     "sqlite3": "latest"
   },
+  "scripts": {
+    "start": "node scraper.js"
+  },
   "keywords": [
     "scraper",
     "morph"
