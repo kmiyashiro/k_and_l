@@ -100,6 +100,11 @@ async function run(db) {
 
   const elements = $('.tf-product')
   console.log(`Found ${elements.length} elements`)
+  if (elements.length === 0) {
+    throw new Error(
+      'Did not find any results, probably need to change selector'
+    )
+  }
   // console.log("Elements", elements);
   elements.each(function () {
     const link = $(this).find(".tf-product-header > a[href^='/p/i']").first()
