@@ -2,9 +2,12 @@
   "version": "0.0.1",
   "main": "scraper.js",
   "dependencies": {
+    "axios": "^0.19.2",
+    "axios-cookiejar-support": "^0.5.1",
     "cheerio": "latest",
-    "request": "latest",
-    "sqlite3": "latest"
+    "prettier": "^2.0.4",
+    "sqlite3": "latest",
+    "tough-cookie": "^4.0.0"
   },
   "scripts": {
     "start": "node scraper.js"
