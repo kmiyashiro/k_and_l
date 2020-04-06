@@ -19,34 +19,6 @@ const LOGIN_URL = 'https://www.klwines.com/account/login'
 const USERNAME = process.env.MORPH_KL_USER
 const PASSWORD = process.env.MORPH_KL_PASSWORD
 
-async function getLoginRequestToken() {
-  const response = await axios(LOGIN_URL)
-  const $ = cheerio.load(response.data)
-  return $('[name="__RequestVerificationToken"]').val()
-}
-
-async function getCookie() {
-  const loginRequestToken = await getLoginRequestToken()
-  const formData = {
-    __RequestVerificationToken: loginRequestToken,
-    Email: USERNAME,
-    Password: PASSWORD,
-    ReturnUrl: '',
-    'Login.x': '15',
-    'Login.y': '5',
-  }
-
-  return axios(LOGIN_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'User-Agent':
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9',
-    },
-    data: querystring.stringify(formData),
-  })
-}
-
 function initDatabase(callback) {
   // Set up sqlite database.
   const db = new sqlite3.Database('data.sqlite')
@@ -79,6 +51,35 @@ function readRows(db) {
   // Read some data.
   db.each('SELECT name, date, price FROM data', function (err, row) {
     console.log(`${row.date} ${row.name}: ${row.price}`)
+  })
+}
+
+async function getLoginRequestToken() {
+  const response = await axios(LOGIN_URL)
+  const $ = cheerio.load(response.data)
+  return $('[name="__RequestVerificationToken"]').val()
+}
+
+// Login so we can see the hidden insider prices
+async function getCookie() {
+  const loginRequestToken = await getLoginRequestToken()
+  const formData = {
+    __RequestVerificationToken: loginRequestToken,
+    Email: USERNAME,
+    Password: PASSWORD,
+    ReturnUrl: '',
+    'Login.x': '15',
+    'Login.y': '5',
+  }
+
+  return axios(LOGIN_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'User-Agent':
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9',
+    },
+    data: querystring.stringify(formData),
   })
 }
 
@@ -137,7 +138,6 @@ async function scrapeCategory(category, db) {
         .trim()
         .replace(/[\$\.\*]/g, '')
     )
-    console.log('id:', id, 'name:', name, 'price:', price)
 
     updateRow(db, id, category, name, price)
   })
@@ -148,7 +148,7 @@ async function run(db) {
   console.log('running')
   console.log('getting cookie')
   await getCookie()
-  // Use request to read in pages.
+
   console.log('fetching categories')
   const categories = await getCategories()
   console.log('found categories:', categories.length)
