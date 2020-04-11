@@ -136,7 +136,7 @@ async function scrapeCategory(category, db) {
       priceNode
         .text()
         .trim()
-        .replace(/[\$\.\*]/g, '')
+        .replace(/[\$\,\.\*]/g, '')
     )
 
     updateRow(db, id, category, name, price)
